@@ -29,7 +29,10 @@ def test_server_speaks_kit_protocol_1_1(provider, app) -> None:
     assert version["protocol_version"] == PROTOCOL_VERSION == "1.1"
     assert version["plugin_id"] == provider
     assert version["runtime"]["provider"] == provider
-    assert MANIFESTS[provider]["runtime_modes"]["container_service"]["protocol_version"] == PROTOCOL_VERSION
+    assert (
+        MANIFESTS[provider]["runtime_modes"]["container_service"]["protocol_version"]
+        == PROTOCOL_VERSION
+    )
 
 
 def test_capabilities_serves_the_manifest_capability_set(provider, app) -> None:

@@ -9,7 +9,9 @@ from sceneapi_3dgs import trainer
 from sceneapi_3dgs.trainer import _parse_brush_metrics
 
 
-def test_vulkan_gpu_runtime_accepts_hardware_when_software_device_is_also_listed(monkeypatch) -> None:
+def test_vulkan_gpu_runtime_accepts_hardware_when_software_device_is_also_listed(
+    monkeypatch,
+) -> None:
     def fake_run(*args, **kwargs):
         return subprocess.CompletedProcess(
             args[0],
@@ -39,9 +41,7 @@ def test_vulkan_gpu_runtime_rejects_software_only(monkeypatch) -> None:
             args[0],
             0,
             stdout=(
-                "GPU0:\n"
-                "    deviceName = llvmpipe\n"
-                "    deviceType = PHYSICAL_DEVICE_TYPE_CPU\n"
+                "GPU0:\n    deviceName = llvmpipe\n    deviceType = PHYSICAL_DEVICE_TYPE_CPU\n"
             ),
             stderr="",
         )

@@ -112,7 +112,9 @@ def runtime_info(provider: str) -> dict[str, Any]:
             info["torch"] = torch.__version__
             info["torch_cuda"] = getattr(torch.version, "cuda", None)
             info["cuda_available"] = bool(torch.cuda.is_available())
-            info["cuda_device"] = torch.cuda.get_device_name(0) if torch.cuda.is_available() else None
+            info["cuda_device"] = (
+                torch.cuda.get_device_name(0) if torch.cuda.is_available() else None
+            )
         except Exception as exc:
             info["torch_error"] = f"{type(exc).__name__}: {exc}"
             info["cuda_available"] = False
@@ -269,7 +271,9 @@ def evaluate(request: ExecuteRequest) -> dict[str, Any]:
     radiance_field_id = _required_str(inputs, "radiance_field_id")
     evaluation_id = _required_str(inputs, "evaluation_id")
     project_id = _required_str(inputs, "project_id")
-    seq = int(inputs.get("snapshot_seq") or spec.get("snapshot_seq") or options.get("snapshot_seq") or 1)
+    seq = int(
+        inputs.get("snapshot_seq") or spec.get("snapshot_seq") or options.get("snapshot_seq") or 1
+    )
     snapshot_path = _snapshot_path(options, project_id, radiance_field_id, seq)
     started = time.perf_counter()
     metrics_path = Path(str(options.get("metrics_path") or snapshot_path / "metrics.json"))
@@ -400,7 +404,9 @@ def _train_lfs(
         str(options.get("log_level") or "info"),
     ]
     if eval_config.get("enabled") is True:
-        argv.extend(["--steps-scaler", str(float(options.get("steps_scaler") or max_steps / 30000.0))])
+        argv.extend(
+            ["--steps-scaler", str(float(options.get("steps_scaler") or max_steps / 30000.0))]
+        )
     else:
         argv.extend(["--iter", str(max_steps)])
         if "steps_scaler" in options:
@@ -467,7 +473,9 @@ def _train_spirulae(
         if "dataparser.eval_mode" not in options:
             train_args.extend(["--dataparser.eval_mode", "interval"])
         if "dataparser.eval_interval" not in options:
-            train_args.extend(["--dataparser.eval_interval", str(int(options.get("test_every") or 8))])
+            train_args.extend(
+                ["--dataparser.eval_interval", str(int(options.get("test_every") or 8))]
+            )
     if not bool(options.get("save_only_latest_checkpoint", True)):
         train_args.extend(["--save_only_latest_checkpoint", "False"])
     argv = [
@@ -509,7 +517,9 @@ def _train_fastergs(
     if not (framework / "scripts" / "convert_to_ply.py").is_file():
         raise FileNotFoundError(f"NeRFICG convert_to_ply.py is missing under: {framework}")
     if not (framework / "src" / "Methods" / method_name).exists():
-        raise FileNotFoundError(f"Faster-GS method is not installed: {framework / 'src' / 'Methods' / method_name}")
+        raise FileNotFoundError(
+            f"Faster-GS method is not installed: {framework / 'src' / 'Methods' / method_name}"
+        )
     model_name = str(options.get("model_name") or f"{snapshot_path.parent.parent.name}_fastergs")
     template = Path(str(options.get("config_template") or provider_root / "fastergs_garden.yaml"))
     generated_config = work_dir / f"{model_name}.yaml"
@@ -630,7 +640,9 @@ def _brush_executable() -> Path:
     if override:
         return Path(override)
     root = _native_root("brush")
-    return _first_existing([root / "target" / "release" / "brush", root / "target" / "release" / "brush.exe"])
+    return _first_existing(
+        [root / "target" / "release" / "brush", root / "target" / "release" / "brush.exe"]
+    )
 
 
 def _lfs_executable() -> Path:
@@ -783,7 +795,9 @@ def _require_torch_cuda(provider: str) -> None:
     import torch
 
     if not torch.cuda.is_available():
-        raise RuntimeError(f"CUDA torch runtime is required for {provider}; torch.cuda.is_available() is false")
+        raise RuntimeError(
+            f"CUDA torch runtime is required for {provider}; torch.cuda.is_available() is false"
+        )
 
 
 def _dataset_path(options: dict[str, Any]) -> Path:
@@ -802,14 +816,22 @@ def _snapshot_path(
     radiance_field_id: str,
     seq: int,
 ) -> Path:
-    root = Path(str(options.get("output_path") or os.environ.get("SFMAPI_PLUGIN_OUTPUT_ROOT") or "/sfmapi/output"))
+    root = Path(
+        str(
+            options.get("output_path")
+            or os.environ.get("SFMAPI_PLUGIN_OUTPUT_ROOT")
+            or "/sfmapi/output"
+        )
+    )
     return root / project_id / radiance_field_id / "snapshots" / str(seq)
 
 
 def _work_path(
     options: dict[str, Any], project_id: str, radiance_field_id: str, run_id: str | None
 ) -> Path:
-    root = Path(str(options.get("work_path") or os.environ.get("SFMAPI_PLUGIN_WORK_ROOT") or "/sfmapi/work"))
+    root = Path(
+        str(options.get("work_path") or os.environ.get("SFMAPI_PLUGIN_WORK_ROOT") or "/sfmapi/work")
+    )
     return root / project_id / radiance_field_id / (run_id or "run")
 
 
@@ -849,7 +871,9 @@ def _requested_metrics(eval_config: dict[str, Any]) -> set[str]:
     return {"psnr", "ssim", "lpips"}
 
 
-def _parse_brush_metrics(process: dict[str, Any], *, duration_s: float | None) -> dict[str, Any] | None:
+def _parse_brush_metrics(
+    process: dict[str, Any], *, duration_s: float | None
+) -> dict[str, Any] | None:
     text = f"{process.get('stdout') or ''}\n{process.get('stderr') or ''}"
     matches = re.findall(
         r"Eval iter\s+(?P<iter>\d+):\s+PSNR\s+(?P<psnr>[-+0-9.eE]+),\s+ssim\s+(?P<ssim>[-+0-9.eE]+)",
@@ -1108,7 +1132,7 @@ def _count_fastergs_eval_images(root: Path) -> int:
         stem = path.stem.lower()
         for prefix in prefixes:
             if stem.startswith(prefix):
-                stem = stem[len(prefix):]
+                stem = stem[len(prefix) :]
                 break
         view_ids.add(stem)
     return len(view_ids) if 0 < len(view_ids) < len(files) else len(files)

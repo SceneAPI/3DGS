@@ -278,7 +278,9 @@ def evaluate(request: ExecuteRequest) -> dict[str, Any]:
     radiance_field_id = _required_str(inputs, "radiance_field_id")
     evaluation_id = _required_str(inputs, "evaluation_id")
     project_id = _required_str(inputs, "project_id")
-    seq = int(inputs.get("snapshot_seq") or spec.get("snapshot_seq") or options.get("snapshot_seq") or 1)
+    seq = int(
+        inputs.get("snapshot_seq") or spec.get("snapshot_seq") or options.get("snapshot_seq") or 1
+    )
     snapshot_path = _snapshot_path(options, project_id, radiance_field_id, seq)
     started = time.perf_counter()
     eval_config = spec.get("eval") if isinstance(spec.get("eval"), dict) else {}
@@ -295,7 +297,10 @@ def evaluate(request: ExecuteRequest) -> dict[str, Any]:
         eval_frames = [frame for idx, frame in enumerate(frames) if idx % test_every == 0]
         if not eval_frames:
             eval_frames = frames[: min(len(frames), 1)]
-        requested = {str(metric).lower() for metric in (eval_config.get("metrics") or ["psnr", "ssim", "lpips"])}
+        requested = {
+            str(metric).lower()
+            for metric in (eval_config.get("metrics") or ["psnr", "ssim", "lpips"])
+        }
         metrics = _compute_colmap_eval_metrics(
             torch,
             rasterization,
@@ -326,7 +331,9 @@ def evaluate(request: ExecuteRequest) -> dict[str, Any]:
                 f"re-render, or an existing metrics file: {metrics_path}"
             )
         raw = json.loads(metrics_path.read_text(encoding="utf-8"))
-        metrics = _normalize_metrics_payload(raw, duration_s=round(time.perf_counter() - started, 3))
+        metrics = _normalize_metrics_payload(
+            raw, duration_s=round(time.perf_counter() - started, 3)
+        )
     artifacts = [
         {
             "kind": "radiance.evaluation.metrics",
@@ -372,7 +379,9 @@ def _train_colmap_dataset(
     max_points = int(options.get("num_gaussians") or options.get("max_splats") or 100_000)
     points, point_colors = _colmap_points(reconstruction, max_points=max_points)
     means = torch.nn.Parameter(torch.as_tensor(points, device=device, dtype=torch.float32))
-    colors_init = torch.as_tensor(point_colors, device=device, dtype=torch.float32).clamp(1e-4, 1 - 1e-4)
+    colors_init = torch.as_tensor(point_colors, device=device, dtype=torch.float32).clamp(
+        1e-4, 1 - 1e-4
+    )
     raw_colors = torch.nn.Parameter(torch.logit(colors_init))
     extent = float(np.linalg.norm(points.max(axis=0) - points.min(axis=0)))
     init_scale = float(options.get("init_scale") or max(extent / 1200.0, 1e-3))
@@ -664,7 +673,11 @@ def _compute_colmap_eval_metrics(
         "render_time_s_total": round(render_time_s_total, 6),
         "render_time_s_mean": round(render_time_s_total / len(frames), 6),
     }
-    missing = [name for name in ("psnr", "ssim", "lpips") if name in requested and metrics[_metric_key(name)] is None]
+    missing = [
+        name
+        for name in ("psnr", "ssim", "lpips")
+        if name in requested and metrics[_metric_key(name)] is None
+    ]
     if missing:
         raise RuntimeError(f"failed to compute requested eval metrics: {', '.join(missing)}")
     return metrics
@@ -697,7 +710,11 @@ def _compute_eval_metrics(
         metrics["ssim"] = _ssim_value(torch, rgb, target)
     if "lpips" in requested:
         metrics["lpips"] = _lpips_value(torch, rgb, target, lpips_net)
-    missing = [name for name in ("psnr", "ssim", "lpips") if name in requested and metrics[_metric_key(name)] is None]
+    missing = [
+        name
+        for name in ("psnr", "ssim", "lpips")
+        if name in requested and metrics[_metric_key(name)] is None
+    ]
     if missing:
         raise RuntimeError(f"failed to compute requested eval metrics: {', '.join(missing)}")
     return metrics
@@ -780,10 +797,14 @@ def _load_colmap_frames(torch: Any, options: dict[str, Any]) -> tuple[Any, list[
     try:
         import pycolmap
     except Exception as exc:
-        raise RuntimeError("Python package 'pycolmap' is required for gsplat COLMAP training") from exc
+        raise RuntimeError(
+            "Python package 'pycolmap' is required for gsplat COLMAP training"
+        ) from exc
     sparse_path = _colmap_sparse_path(options)
     if sparse_path is None:
-        raise FileNotFoundError("gsplat COLMAP training requires dataset_path/sparse or sparse_path")
+        raise FileNotFoundError(
+            "gsplat COLMAP training requires dataset_path/sparse or sparse_path"
+        )
     reconstruction = pycolmap.Reconstruction(str(sparse_path))
     dataset_path = Path(str(options.get("dataset_path") or sparse_path.parents[1]))
     image_root = _image_root(options, dataset_path)
@@ -859,7 +880,9 @@ def _image_root(options: dict[str, Any], dataset_path: Path) -> Path:
     for candidate in candidates:
         if candidate.is_dir():
             return candidate
-    raise FileNotFoundError(f"gsplat COLMAP training could not find an image directory under {dataset_path}")
+    raise FileNotFoundError(
+        f"gsplat COLMAP training could not find an image directory under {dataset_path}"
+    )
 
 
 def _normalize_metrics_payload(raw: Any, *, duration_s: float) -> dict[str, Any]:
@@ -936,7 +959,9 @@ def _require_cuda_gsplat() -> tuple[Any, Any]:
     import torch
 
     if not torch.cuda.is_available():
-        raise RuntimeError("CUDA torch runtime is required for sfmapi-gsplat; torch.cuda.is_available() is false")
+        raise RuntimeError(
+            "CUDA torch runtime is required for sfmapi-gsplat; torch.cuda.is_available() is false"
+        )
     try:
         from gsplat import rasterization
     except Exception as exc:

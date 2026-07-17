@@ -8,8 +8,7 @@ from sceneapi_3dgs.trainer import _parse_lfs_metrics
 
 def test_parse_lfs_metrics_csv(tmp_path) -> None:
     (tmp_path / "metrics.csv").write_text(
-        "iteration,psnr,ssim,time_per_image,num_gaussians\n"
-        "3,19.5,0.64,0.012,123\n",
+        "iteration,psnr,ssim,time_per_image,num_gaussians\n3,19.5,0.64,0.012,123\n",
         encoding="utf-8",
     )
     eval_dir = tmp_path / "eval_step_3"
