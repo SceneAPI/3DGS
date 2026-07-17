@@ -2,7 +2,7 @@
 # Brush container-service image. Ported from the superseded
 # SFMAPI/sfmapi_brush repo's root Dockerfile (decision D3); the engine
 # build (ArthurBrussee/brush) is unchanged — only the plugin-package
-# install and CMD moved to the merged sfmapi-radiance package.
+# install and CMD moved to the merged sceneapi-3dgs package.
 FROM rust:1-bookworm
 
 ARG SFMAPI_BRUSH_REF=main

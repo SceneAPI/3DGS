@@ -4,7 +4,7 @@
 # engine checkout + patches (harry7557558/spirulae-splat, ref arg
 # SFMAPI_SPIRULAE_REF, default master = the upstream default branch)
 # are unchanged — only the plugin-package install and CMD moved to the
-# merged sfmapi-radiance package.
+# merged sceneapi-3dgs package.
 FROM pytorch/pytorch:2.7.1-cuda12.8-cudnn9-devel
 
 ARG SFMAPI_SPIRULAE_REF=master

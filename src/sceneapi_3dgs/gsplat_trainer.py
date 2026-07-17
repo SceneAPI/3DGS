@@ -1,6 +1,6 @@
 """gsplat trainer engine -- the one radiance provider whose trainer is
 genuinely different from the shared native-engine module
-(:mod:`sfmapi_radiance.trainer`): it trains in process with CUDA torch +
+(:mod:`sceneapi_3dgs.trainer`): it trains in process with CUDA torch +
 gsplat rasterization (plus lpips/pycolmap for evaluation) instead of
 shelling out to a native engine build."""
 
@@ -16,7 +16,7 @@ from typing import Any
 import numpy as np
 from PIL import Image
 
-from sfmapi_radiance.trainer import ExecuteRequest
+from sceneapi_3dgs.trainer import ExecuteRequest
 
 PROVIDER = "gsplat"
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".tif", ".tiff", ".webp"}

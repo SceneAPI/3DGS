@@ -2,7 +2,7 @@
 
 ``build_app(provider)`` builds the ASGI app that the old per-repo
 ``sfmapi_<pkg>.server:app`` module attribute used to be: it serves that
-provider's manifest through the ``sfmapi.plugin_service`` kit and dispatches
+provider's manifest through the ``sceneapi.plugin_service`` kit and dispatches
 ``/execute`` tasks to the matching trainer engine. The per-provider
 ``sfmapi-<provider>`` console scripts keep their old names and defaults.
 """
@@ -13,11 +13,11 @@ import argparse
 import traceback
 from typing import Any
 
-from sfmapi.plugin_service import ManifestBackend, TaskExecutor, build_plugin_server
+from sceneapi.plugin_service import ManifestBackend, TaskExecutor, build_plugin_server
 
-from sfmapi_radiance import __version__
-from sfmapi_radiance.providers import MANIFESTS
-from sfmapi_radiance.trainer import ExecuteRequest
+from sceneapi_3dgs import __version__
+from sceneapi_3dgs.providers import MANIFESTS
+from sceneapi_3dgs.trainer import ExecuteRequest
 
 
 def _engine(provider: str) -> Any:
@@ -27,21 +27,21 @@ def _engine(provider: str) -> Any:
     lazily: launching (or testing) any other provider must not require the
     gsplat extras. Call-time resolution also keeps the monkeypatch seam the
     old per-repo suites used (``sfmapi_<pkg>.server.train``): patching
-    ``sfmapi_radiance.trainer.train`` or
-    ``sfmapi_radiance.gsplat_trainer.train`` reroutes dispatch immediately.
+    ``sceneapi_3dgs.trainer.train`` or
+    ``sceneapi_3dgs.gsplat_trainer.train`` reroutes dispatch immediately.
     """
     if provider == "gsplat":
-        from sfmapi_radiance import gsplat_trainer
+        from sceneapi_3dgs import gsplat_trainer
 
         return gsplat_trainer
-    from sfmapi_radiance import trainer
+    from sceneapi_3dgs import trainer
 
     return trainer
 
 
 def _make_executor(plugin_provider: str) -> TaskExecutor:
     """Kit executor for one provider: dispatch each task to its trainer,
-    mapping trainer errors onto the ``status: failed`` result the sfmapi
+    mapping trainer errors onto the ``status: failed`` result the sceneapi
     worker expects."""
 
     def execute_task(

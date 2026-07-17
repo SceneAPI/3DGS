@@ -6,7 +6,7 @@ sfmapi_fastergs); each of those repos already carried all four ``_train_*``
 implementations and differed only in four module-level constants, which are
 folded into the :data:`PROVIDERS` config table here. gsplat's in-process
 CUDA/torch trainer is genuinely different and lives in
-:mod:`sfmapi_radiance.gsplat_trainer`.
+:mod:`sceneapi_3dgs.gsplat_trainer`.
 """
 
 from __future__ import annotations
@@ -26,7 +26,7 @@ from typing import Any
 
 @dataclass(frozen=True)
 class ExecuteRequest:
-    """One ``/execute`` task as the ``sfmapi.plugin_service`` kit hands it to
+    """One ``/execute`` task as the ``sceneapi.plugin_service`` kit hands it to
     the executor (protocol envelope already validated and stripped)."""
 
     task_kind: str
@@ -122,7 +122,7 @@ def runtime_info(provider: str) -> dict[str, Any]:
 # Canonical radiance.train config-schema option names -> each engine's native
 # backend_options keys. Back-fill only (an explicit native key always wins), so
 # one canonical spec (num_gaussians, max_resolution, test_every) drives every
-# splatting engine identically. See sfmapi radiance.train config-schema.
+# splatting engine identically. See sceneapi radiance.train config-schema.
 _CANONICAL_OPTION_ALIASES: dict[str, dict[str, str]] = {
     "brush": {"num_gaussians": "max_splats", "test_every": "eval_split_every"},
     "lfs": {"num_gaussians": "max_cap", "max_resolution": "max_width"},

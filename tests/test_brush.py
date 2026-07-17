@@ -5,8 +5,8 @@ from __future__ import annotations
 
 import subprocess
 
-from sfmapi_radiance import trainer
-from sfmapi_radiance.trainer import _parse_brush_metrics
+from sceneapi_3dgs import trainer
+from sceneapi_3dgs.trainer import _parse_brush_metrics
 
 
 def test_vulkan_gpu_runtime_accepts_hardware_when_software_device_is_also_listed(monkeypatch) -> None:

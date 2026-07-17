@@ -3,7 +3,7 @@
 # SFMAPI/sfmapi_lfs repo's root Dockerfile (decision D3); the engine
 # build (MrNeRF/LichtFeld-Studio, ref arg SFMAPI_LFS_REF, default
 # master = the upstream default branch) is unchanged — only the
-# plugin-package install and CMD moved to the merged sfmapi-radiance
+# plugin-package install and CMD moved to the merged sceneapi-3dgs
 # package.
 FROM nvidia/cuda:12.8.1-devel-ubuntu24.04
 

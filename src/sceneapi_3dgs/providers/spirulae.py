@@ -31,10 +31,10 @@ MANIFEST: dict[str, Any] = {'schema_version': 1,
  'description': '3D Gaussian Splatting plugin for spirulae-splat training, dataset rendering, and '
                 'PLY export through the sfmapi radiance-field contract.',
  'display_name': 'spirulae-splat',
- 'entry_points': ['sfmapi_radiance.providers.spirulae:plugin'],
- 'github_url': 'https://github.com/SFMAPI/sfmapi_radiance.git',
+ 'entry_points': ['sceneapi_3dgs.providers.spirulae:plugin'],
+ 'github_url': 'https://github.com/SceneAPI/3DGS.git',
  'licenses': [{'name': 'Apache-2.0'}],
- 'package_name': 'sfmapi-radiance',
+ 'package_name': 'sceneapi-3dgs',
  'plugin_id': 'spirulae',
  'providers': [{'backend_actions': ['spirulae.*'],
                 'capabilities': ['radiance.train',
@@ -73,7 +73,7 @@ MANIFEST: dict[str, Any] = {'schema_version': 1,
                                                                       'TORCH_PACKAGES': 'torch '
                                                                                         'torchvision '
                                                                                         'torchaudio'},
-                                                             'context': 'https://github.com/SFMAPI/sfmapi_radiance.git',
+                                                             'context': 'https://github.com/SceneAPI/3DGS.git',
                                                              'dockerfile': 'docker/spirulae.Dockerfile',
                                                              'ref': 'main',
                                                              'source': 'git'}},
@@ -86,13 +86,13 @@ MANIFEST: dict[str, Any] = {'schema_version': 1,
                                                         'source_revision': 'main'},
                                          'service': {'default_url': 'http://127.0.0.1:8094',
                                                      'url_env': 'SFMAPI_SPIRULAE_SERVICE_URL'}},
-                   'docker': {'build_context': 'https://github.com/SFMAPI/sfmapi_radiance.git',
+                   'docker': {'build_context': 'https://github.com/SceneAPI/3DGS.git',
                               'image': None},
                    'external_tool': None,
-                   'uv': {'package': 'sfmapi-radiance',
+                   'uv': {'package': 'sceneapi-3dgs',
                           'ref': 'main',
                           'source': 'git',
-                          'url': 'https://github.com/SFMAPI/sfmapi_radiance.git'}},
+                          'url': 'https://github.com/SceneAPI/3DGS.git'}},
  'trust_tier': 'community',
  'upstream_projects': [{'license': None,
                         'name': 'spirulae-splat',
@@ -104,7 +104,7 @@ MANIFEST: dict[str, Any] = {'schema_version': 1,
 # Plugin's manifest-only mode (backend_name + backend_factory default
 # to None and register() no-ops). `Plugin` stays exported under the
 # same name.
-from sfmapi.backends import Plugin  # noqa: E402
+from sceneapi.backends import Plugin  # noqa: E402
 
 plugin = Plugin(manifest=MANIFEST)
 

@@ -1,4 +1,4 @@
-# sfmapi-radiance
+# sceneapi-3dgs
 
 One `sfmapi-plugin-http-v1` container-service package for the five radiance-field
 training providers that previously shipped as five separate plugin repos. Each
@@ -9,14 +9,14 @@ its own module.
 
 | Provider id | Display name | Engine | Trainer module | Default service port |
 |---|---|---|---|---|
-| `brush` | Brush | native wgpu/Vulkan build (`/opt/brush`) | `sfmapi_radiance.trainer` | 8096 |
-| `gsplat` | gsplat | in-process CUDA torch + gsplat | `sfmapi_radiance.gsplat_trainer` | 8098 |
-| `fastergs` | Faster-GS | NeRFICG Faster-GS checkout (`/opt/fastergs`) | `sfmapi_radiance.trainer` | 8093 |
-| `lfs` | LichtFeld Studio | native CUDA build (`/opt/LichtFeld-Studio`) | `sfmapi_radiance.trainer` | 8095 |
-| `spirulae` | spirulae-splat | spirulae-splat checkout (`/opt/spirulae-splat`) | `sfmapi_radiance.trainer` | 8094 |
+| `brush` | Brush | native wgpu/Vulkan build (`/opt/brush`) | `sceneapi_3dgs.trainer` | 8096 |
+| `gsplat` | gsplat | in-process CUDA torch + gsplat | `sceneapi_3dgs.gsplat_trainer` | 8098 |
+| `fastergs` | Faster-GS | NeRFICG Faster-GS checkout (`/opt/fastergs`) | `sceneapi_3dgs.trainer` | 8093 |
+| `lfs` | LichtFeld Studio | native CUDA build (`/opt/LichtFeld-Studio`) | `sceneapi_3dgs.trainer` | 8095 |
+| `spirulae` | spirulae-splat | spirulae-splat checkout (`/opt/spirulae-splat`) | `sceneapi_3dgs.trainer` | 8094 |
 
 Every service exposes `/healthz`, `/version`, `/capabilities`, and `/execute`
-through the `sfmapi.plugin_service` kit at protocol `sfmapi-plugin-http-v1`
+through the `sceneapi.plugin_service` kit at protocol `sfmapi-plugin-http-v1`
 version 1.1, and dispatches `radiance_train` / `radiance_eval` tasks to its
 provider's trainer.
 
@@ -27,7 +27,7 @@ native builds driven over subprocess (torch for spirulae/fastergs arrives via
 the container image, as before):
 
 ```bash
-uv pip install sfmapi-radiance
+uv pip install sceneapi-3dgs
 ```
 
 Extras:
@@ -41,7 +41,10 @@ Extras:
 
 ## Running a provider service
 
-The five launchers keep their old names and defaults (`0.0.0.0:8080`):
+The five launchers keep their old names and defaults (`0.0.0.0:8080`) — they
+are deployment-facing (container CMDs, operator launchers), so the 0.1.0
+package rename intentionally does NOT rename them and adds no
+sceneapi-prefixed aliases:
 
 ```bash
 sfmapi-brush --host 127.0.0.1 --port 8096
@@ -51,7 +54,7 @@ sfmapi-lfs --host 127.0.0.1 --port 8095
 sfmapi-spirulae --host 127.0.0.1 --port 8094
 ```
 
-Programmatically: `from sfmapi_radiance.server import build_app;
+Programmatically: `from sceneapi_3dgs.server import build_app;
 app = build_app("brush")` (replaces the old `sfmapi_brush.server:app`
 module attribute).
 
@@ -64,9 +67,36 @@ uv run ruff check .
 uv run pytest -q
 ```
 
-`sfmapi` resolves from the sibling checkout (`../sfmapi`) via
-`[tool.uv.sources]`; CI checks out `SFMAPI/sfmapi` into `.deps/sfmapi` and
-installs this package `--no-deps`.
+`sceneapi` resolves from the sibling core checkout (`../sfmapi`) via
+`[tool.uv.sources]`; CI checks out `SceneAPI/SceneAPI` into `.deps/sceneapi`
+and installs this package `--no-deps`.
+
+## Rename (0.1.0): sfmapi-radiance → sceneapi-3dgs
+
+This package was renamed from `sfmapi-radiance` (import package
+`sfmapi_radiance`) as part of the sfmapi → sceneapi migration; the repo moved
+to `SceneAPI/3DGS`. What changed and what deliberately did not:
+
+- **Distribution / import package**: `sceneapi-3dgs` / `sceneapi_3dgs`.
+- **Entry-point group**: manifests register under `sceneapi.backends` with
+  UNCHANGED provider names (`brush`, `gsplat`, `fastergs`, `lfs`,
+  `spirulae`); the core still reads the legacy `sfmapi.backends` group for
+  one release.
+- **Console scripts**: unchanged (`sfmapi-brush`, `sfmapi-gsplat`,
+  `sfmapi-fastergs`, `sfmapi-lfs`, `sfmapi-spirulae`) — kept verbatim this
+  release, no aliases added.
+- **Plugin-owned `SFMAPI_*` env names are kept** — they are manifest-owned
+  container contract, not core settings: `SFMAPI_<PROVIDER>_SERVICE_URL`,
+  `SFMAPI_PLUGIN_OBJECT_STORE_URL`, `SFMAPI_PLUGIN_OUTPUT_ROOT`,
+  `SFMAPI_PLUGIN_WORK_ROOT`, `SFMAPI_PLUGIN_EXECUTE_TIMEOUT`,
+  `SFMAPI_<PROVIDER>_ROOT`, `SFMAPI_BRUSH_EXECUTABLE`,
+  `SFMAPI_LFS_EXECUTABLE`, `SFMAPI_GSPLAT_OUTPUT_ROOT`,
+  `SFMAPI_FASTERGS_FRAMEWORK_ROOT`, and the `SFMAPI_*_REF` Docker engine
+  build args.
+- **Wire identity unchanged** (until migration Phase C): protocol
+  `sfmapi-plugin-http-v1`, artifact formats `sfmapi.radiance.*.v1`, the
+  `/sfmapi/{input,output,work,logs,cache}` container mount contract, and the
+  manifests' `compatibility.sfmapi` field name.
 
 ## Migration (decision D3)
 
@@ -74,16 +104,16 @@ This package supersedes the five per-provider repos — `sfmapi_brush`,
 `sfmapi_gsplat`, `sfmapi_fastergs`, `sfmapi_lfs`, `sfmapi_spirulae` — which
 are to be archived by their owner.
 
-- **Entry points are unchanged**: the `sfmapi.backends` group still exposes
+- **Entry points are unchanged**: the backend entry-point group still exposes
   `brush`, `gsplat`, `fastergs`, `lfs`, and `spirulae`, so a deployment swaps
   packages without config changes. Only the entry-point *values* move (e.g.
-  `sfmapi_brush.plugin:plugin` → `sfmapi_radiance.providers.brush:plugin`).
+  `sfmapi_brush.plugin:plugin` → `sceneapi_3dgs.providers.brush:plugin`).
 - **Console scripts are unchanged**: `sfmapi-brush`, `sfmapi-gsplat`,
   `sfmapi-fastergs`, `sfmapi-lfs`, `sfmapi-spirulae`.
 - **Manifest identity now names this repo.** Each manifest's identity
-  fields — `package_name` (`sfmapi-radiance`), `github_url`
-  (`SFMAPI/sfmapi_radiance`), `entry_points`
-  (`sfmapi_radiance.providers.<provider>:plugin`), the `uv` install
+  fields — `package_name` (`sceneapi-3dgs`), `github_url`
+  (`SceneAPI/3DGS`), `entry_points`
+  (`sceneapi_3dgs.providers.<provider>:plugin`), the `uv` install
   coordinates, and the `docker` / `container_service.image.build` contexts —
   point at this repo. The five per-provider Dockerfiles were ported to
   `docker/<provider>.Dockerfile` (engine build steps unchanged; only the
@@ -97,8 +127,8 @@ are to be archived by their owner.
   `dockerfile` field there), so a bare `docker build` of the repo root finds
   no Dockerfile; use the container_service build (or
   `docker build -f docker/<provider>.Dockerfile`) instead.
-- **Direct importers**: `sfmapi_<pkg>.plugin` → `sfmapi_radiance.providers.<provider>`;
-  `sfmapi_<pkg>.trainer` → `sfmapi_radiance.trainer` (brush/lfs/spirulae/fastergs,
-  now parameterized by `request.provider`) or `sfmapi_radiance.gsplat_trainer`;
-  `sfmapi_<pkg>.server:app` → `sfmapi_radiance.server:build_app(<provider>)`.
-- `sfmapi-gsplat[cuda]` → `sfmapi-radiance[gsplat-cuda]`.
+- **Direct importers**: `sfmapi_<pkg>.plugin` → `sceneapi_3dgs.providers.<provider>`;
+  `sfmapi_<pkg>.trainer` → `sceneapi_3dgs.trainer` (brush/lfs/spirulae/fastergs,
+  now parameterized by `request.provider`) or `sceneapi_3dgs.gsplat_trainer`;
+  `sfmapi_<pkg>.server:app` → `sceneapi_3dgs.server:build_app(<provider>)`.
+- `sfmapi-gsplat[cuda]` → `sceneapi-3dgs[gsplat-cuda]`.

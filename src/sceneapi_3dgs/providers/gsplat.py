@@ -10,9 +10,9 @@ MANIFEST: dict[str, Any] = {
         "3D Gaussian Splatting plugin for gsplat training, evaluation, and PLY "
         "snapshot export through the sfmapi radiance-field contract."
     ),
-    "package_name": "sfmapi-radiance",
-    "github_url": "https://github.com/SFMAPI/sfmapi_radiance.git",
-    "entry_points": ["sfmapi_radiance.providers.gsplat:plugin"],
+    "package_name": "sceneapi-3dgs",
+    "github_url": "https://github.com/SceneAPI/3DGS.git",
+    "entry_points": ["sceneapi_3dgs.providers.gsplat:plugin"],
     "providers": [
         {
             "provider_id": "gsplat",
@@ -31,13 +31,13 @@ MANIFEST: dict[str, Any] = {
     "runtime_modes": {
         "uv": {
             "source": "git",
-            "url": "https://github.com/SFMAPI/sfmapi_radiance.git",
+            "url": "https://github.com/SceneAPI/3DGS.git",
             "ref": "main",
-            "package": "sfmapi-radiance",
+            "package": "sceneapi-3dgs",
         },
         "docker": {
             "image": None,
-            "build_context": "https://github.com/SFMAPI/sfmapi_radiance.git",
+            "build_context": "https://github.com/SceneAPI/3DGS.git",
         },
         "container_service": {
             "protocol": "sfmapi-plugin-http-v1",
@@ -49,7 +49,7 @@ MANIFEST: dict[str, Any] = {
             "image": {
                 "build": {
                     "source": "git",
-                    "context": "https://github.com/SFMAPI/sfmapi_radiance.git",
+                    "context": "https://github.com/SceneAPI/3DGS.git",
                     "dockerfile": "docker/gsplat.Dockerfile",
                     "ref": "main",
                     "args": {
@@ -147,6 +147,6 @@ MANIFEST: dict[str, Any] = {
 # in-process backend factory, so we use the canonical Plugin's
 # manifest-only mode (backend_name + backend_factory default to None
 # and register() no-ops). `Plugin` stays exported under the same name.
-from sfmapi.backends import Plugin  # noqa: E402
+from sceneapi.backends import Plugin  # noqa: E402
 
 plugin = Plugin(manifest=MANIFEST)

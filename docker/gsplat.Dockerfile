@@ -3,7 +3,7 @@
 # SFMAPI/sfmapi_gsplat repo's root Dockerfile (decision D3); the torch +
 # gsplat source build is unchanged — only the plugin-package install
 # (now `.[gsplat]`: pillow/numpy/pycolmap moved from hard deps to the
-# gsplat extra in the merged package) and CMD moved to sfmapi-radiance.
+# gsplat extra in the merged package) and CMD moved to sceneapi-3dgs.
 FROM pytorch/pytorch:2.7.1-cuda12.8-cudnn9-devel
 
 ARG GSPLAT_PACKAGE=gsplat==1.5.3

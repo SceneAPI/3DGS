@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import pytest
 
-from sfmapi_radiance import gsplat_trainer, trainer
-from sfmapi_radiance.providers import PROVIDER_IDS
-from sfmapi_radiance.server import build_app
+from sceneapi_3dgs import gsplat_trainer, trainer
+from sceneapi_3dgs.providers import PROVIDER_IDS
+from sceneapi_3dgs.server import build_app
 
 
 def engine_module(provider: str):

@@ -10,10 +10,10 @@ from __future__ import annotations
 
 from conftest import engine_module
 from fastapi.testclient import TestClient
-from sfmapi.plugin_service import PROTOCOL, PROTOCOL_VERSION
+from sceneapi.plugin_service import PROTOCOL, PROTOCOL_VERSION
 
-from sfmapi_radiance.providers import MANIFESTS
-from sfmapi_radiance.trainer import ExecuteRequest
+from sceneapi_3dgs.providers import MANIFESTS
+from sceneapi_3dgs.trainer import ExecuteRequest
 
 
 def test_server_speaks_kit_protocol_1_1(provider, app) -> None:

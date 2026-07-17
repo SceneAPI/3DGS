@@ -9,10 +9,10 @@ import subprocess
 
 import pytest
 from fastapi.testclient import TestClient
-from sfmapi.plugin_service import PROTOCOL, PROTOCOL_VERSION
+from sceneapi.plugin_service import PROTOCOL, PROTOCOL_VERSION
 
-from sfmapi_radiance import gsplat_trainer as trainer
-from sfmapi_radiance.server import build_app
+from sceneapi_3dgs import gsplat_trainer as trainer
+from sceneapi_3dgs.server import build_app
 
 
 def test_gpu_runtime_info_reports_visible_gpu(monkeypatch) -> None:

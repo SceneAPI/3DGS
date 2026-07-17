@@ -11,8 +11,8 @@ import subprocess
 
 import pytest
 
-from sfmapi_radiance import trainer
-from sfmapi_radiance.trainer import PROVIDERS, ExecuteRequest, _normalize_metrics
+from sceneapi_3dgs import trainer
+from sceneapi_3dgs.trainer import PROVIDERS, ExecuteRequest, _normalize_metrics
 
 ENGINE_PROVIDERS = tuple(PROVIDERS)
 
