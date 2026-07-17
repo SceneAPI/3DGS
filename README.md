@@ -80,13 +80,23 @@ are to be archived by their owner.
   `sfmapi_brush.plugin:plugin` → `sfmapi_radiance.providers.brush:plugin`).
 - **Console scripts are unchanged**: `sfmapi-brush`, `sfmapi-gsplat`,
   `sfmapi-fastergs`, `sfmapi-lfs`, `sfmapi-spirulae`.
-- **Manifests are carried verbatim** (they were just synced to the core
-  vocabulary at protocol 1.1). That deliberately includes each manifest's
-  identity fields — `package_name`, `github_url`, `entry_points`, and the
-  `container_service.image.build` context — which still name the original
-  per-repo coordinates; container images therefore still build from the old
-  repos' Dockerfiles. Re-pointing manifest identity at this repo is a
-  follow-up decision.
+- **Manifest identity now names this repo.** Each manifest's identity
+  fields — `package_name` (`sfmapi-radiance`), `github_url`
+  (`SFMAPI/sfmapi_radiance`), `entry_points`
+  (`sfmapi_radiance.providers.<provider>:plugin`), the `uv` install
+  coordinates, and the `docker` / `container_service.image.build` contexts —
+  point at this repo. The five per-provider Dockerfiles were ported to
+  `docker/<provider>.Dockerfile` (engine build steps unchanged; only the
+  plugin-package install + CMD moved to this package), and
+  `container_service.image.build.dockerfile` selects the right one per
+  provider. Engine checkouts inside the Dockerfiles (ArthurBrussee/brush,
+  MrNeRF/LichtFeld-Studio, nerficg-project, harry7557558/spirulae-splat) and
+  their `SFMAPI_*_REF` build args are untouched — those are external
+  upstreams, not plugin coordinates. Note the plain `docker` runtime mode's
+  `build_context` has no per-provider Dockerfile selector (the schema has no
+  `dockerfile` field there), so a bare `docker build` of the repo root finds
+  no Dockerfile; use the container_service build (or
+  `docker build -f docker/<provider>.Dockerfile`) instead.
 - **Direct importers**: `sfmapi_<pkg>.plugin` → `sfmapi_radiance.providers.<provider>`;
   `sfmapi_<pkg>.trainer` → `sfmapi_radiance.trainer` (brush/lfs/spirulae/fastergs,
   now parameterized by `request.provider`) or `sfmapi_radiance.gsplat_trainer`;

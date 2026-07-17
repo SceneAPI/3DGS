@@ -10,9 +10,9 @@ MANIFEST: dict[str, Any] = {
         "3D Gaussian Splatting plugin for gsplat training, evaluation, and PLY "
         "snapshot export through the sfmapi radiance-field contract."
     ),
-    "package_name": "sfmapi-gsplat",
-    "github_url": "https://github.com/SFMAPI/sfmapi_gsplat.git",
-    "entry_points": ["sfmapi_gsplat.plugin:plugin"],
+    "package_name": "sfmapi-radiance",
+    "github_url": "https://github.com/SFMAPI/sfmapi_radiance.git",
+    "entry_points": ["sfmapi_radiance.providers.gsplat:plugin"],
     "providers": [
         {
             "provider_id": "gsplat",
@@ -31,13 +31,13 @@ MANIFEST: dict[str, Any] = {
     "runtime_modes": {
         "uv": {
             "source": "git",
-            "url": "https://github.com/SFMAPI/sfmapi_gsplat.git",
+            "url": "https://github.com/SFMAPI/sfmapi_radiance.git",
             "ref": "main",
-            "package": "sfmapi-gsplat",
+            "package": "sfmapi-radiance",
         },
         "docker": {
             "image": None,
-            "build_context": "https://github.com/SFMAPI/sfmapi_gsplat.git",
+            "build_context": "https://github.com/SFMAPI/sfmapi_radiance.git",
         },
         "container_service": {
             "protocol": "sfmapi-plugin-http-v1",
@@ -49,8 +49,8 @@ MANIFEST: dict[str, Any] = {
             "image": {
                 "build": {
                     "source": "git",
-                    "context": "https://github.com/SFMAPI/sfmapi_gsplat.git",
-                    "dockerfile": "Dockerfile",
+                    "context": "https://github.com/SFMAPI/sfmapi_radiance.git",
+                    "dockerfile": "docker/gsplat.Dockerfile",
                     "ref": "main",
                     "args": {
                         "GSPLAT_PACKAGE": "gsplat==1.5.3",
