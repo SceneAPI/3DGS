@@ -1,0 +1,79 @@
+[project]
+name = "sfmapi-radiance"
+version = "0.0.1"
+description = "sfmapi container-service plugin bundle for radiance training (Brush, gsplat, Faster-GS, LichtFeld Studio, spirulae-splat)."
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    # fastapi + pydantic arrive via the sfmapi.plugin_service kit's own deps;
+    # uvicorn stays explicit because server.main() imports it directly.
+    "sfmapi>=0.0.1,<0.1",
+    "uvicorn[standard]>=0.32",
+]
+
+[project.optional-dependencies]
+# brush / lfs / spirulae / fastergs need no extras: their engines are native
+# builds driven over subprocess (torch for spirulae/fastergs arrives via the
+# container image, exactly as in the superseded per-provider repos).
+# gsplat trains in process: pillow/numpy/pycolmap were its hard deps before
+# the merge, and the old `cuda` extra (torch/gsplat/lpips) is folded into
+# gsplat-cuda below.
+gsplat = [
+    "pillow>=10",
+    "numpy>=1.26,<3",
+    "pycolmap>=3.11",
+]
+gsplat-cuda = [
+    "pillow>=10",
+    "numpy>=1.26,<3",
+    "pycolmap>=3.11",
+    "torch==2.7.1",
+    "gsplat==1.5.3",
+    "lpips>=0.1.4",
+]
+# pillow/numpy/pycolmap let the test suite import the gsplat trainer (its
+# CUDA paths stay monkeypatched, mirroring the old sfmapi_gsplat CI).
+test = [
+    "httpx>=0.28",
+    "pytest>=8.3",
+    "ruff>=0.11",
+    "pillow>=10",
+    "numpy>=1.26,<3",
+    "pycolmap>=3.11",
+]
+
+[project.scripts]
+sfmapi-brush = "sfmapi_radiance.server:brush_main"
+sfmapi-gsplat = "sfmapi_radiance.server:gsplat_main"
+sfmapi-fastergs = "sfmapi_radiance.server:fastergs_main"
+sfmapi-lfs = "sfmapi_radiance.server:lfs_main"
+sfmapi-spirulae = "sfmapi_radiance.server:spirulae_main"
+
+[project.entry-points."sfmapi.backends"]
+brush = "sfmapi_radiance.providers.brush:plugin"
+gsplat = "sfmapi_radiance.providers.gsplat:plugin"
+fastergs = "sfmapi_radiance.providers.fastergs:plugin"
+lfs = "sfmapi_radiance.providers.lfs:plugin"
+spirulae = "sfmapi_radiance.providers.spirulae:plugin"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/sfmapi_radiance"]
+
+[tool.uv.sources]
+sfmapi = { path = "../sfmapi", editable = true }
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "PT", "RUF"]
+ignore = ["E501", "B008"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers --strict-config"

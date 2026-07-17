@@ -1,0 +1,33 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      # sfmapi is an unpublished path dependency (../sfmapi in
+      # [tool.uv.sources]); CI installs it from a sibling checkout and
+      # installs this plugin with --no-deps so nothing tries to
+      # resolve sfmapi from an index. pillow/numpy/pycolmap are the
+      # gsplat provider's runtime deps not covered by sfmapi core; the
+      # gsplat-cuda extra (torch/gsplat/lpips) stays out of CI.
+      - uses: actions/checkout@v5
+        with:
+          repository: SFMAPI/sfmapi
+          path: .deps/sfmapi
+      - uses: astral-sh/setup-uv@v8.1.0
+      - name: Install
+        run: |
+          uv venv --seed --python 3.12
+          uv pip install -e .deps/sfmapi
+          uv pip install pytest ruff httpx pillow "numpy>=1.26,<3" "pycolmap>=3.11"
+          uv pip install -e . --no-deps
+      - name: Ruff
+        run: .venv/bin/ruff check src tests
+      - name: Test
+        run: .venv/bin/python -m pytest -q
