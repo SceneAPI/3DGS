@@ -11,8 +11,8 @@ import pytest
 from fastapi.testclient import TestClient
 from sceneapi.plugin_service import PROTOCOL, PROTOCOL_VERSION
 
-from sceneapi_3dgs import gsplat_trainer as trainer
-from sceneapi_3dgs.server import build_app
+from gs3 import gsplat_trainer as trainer
+from gs3.server import build_app
 
 
 def test_gpu_runtime_info_reports_visible_gpu(monkeypatch) -> None:

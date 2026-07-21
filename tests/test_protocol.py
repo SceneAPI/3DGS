@@ -12,8 +12,8 @@ from conftest import engine_module
 from fastapi.testclient import TestClient
 from sceneapi.plugin_service import PROTOCOL, PROTOCOL_VERSION
 
-from sceneapi_3dgs.providers import MANIFESTS
-from sceneapi_3dgs.trainer import ExecuteRequest
+from gs3.providers import MANIFESTS
+from gs3.trainer import ExecuteRequest
 
 
 def test_server_speaks_kit_protocol_1_1(provider, app) -> None:

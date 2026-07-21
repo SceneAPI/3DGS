@@ -11,8 +11,8 @@ import subprocess
 
 import pytest
 
-from sceneapi_3dgs import trainer
-from sceneapi_3dgs.trainer import PROVIDERS, ExecuteRequest, _normalize_metrics
+from gs3 import trainer
+from gs3.trainer import PROVIDERS, ExecuteRequest, _normalize_metrics
 
 ENGINE_PROVIDERS = tuple(PROVIDERS)
 

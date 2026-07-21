@@ -1,0 +1,120 @@
+from __future__ import annotations
+
+from typing import Any
+
+MANIFEST: dict[str, Any] = {
+    "schema_version": 1,
+    "artifact_contracts": [
+        "sfmapi.radiance.snapshot.v1",
+        "sfmapi.radiance.variant.ply.v1",
+        "sfmapi.radiance.metrics.v1",
+    ],
+    "backend_actions": ["brush.*"],
+    "capabilities": [
+        "radiance.train",
+        "radiance.evaluate",
+        "radiance.metrics.psnr",
+        "radiance.metrics.ssim",
+    ],
+    "compatibility": {
+        "container_gpu_runtime": "requires hardware Vulkan; Docker Desktop WSL CUDA "
+        "runtime is not sufficient",
+        "cuda": None,
+        "os": ["linux"],
+        "python": ">=3.12,<3.13",
+        "sfmapi": ">=0.0.1",
+        "torch": None,
+        "vulkan": "required",
+    },
+    "config_schemas": ["radiance.train", "brush.evaluate"],
+    "conformance": {"status": "not_run", "suite": "sfmapi-bench"},
+    "description": "3D Gaussian Splatting plugin for Brush training and PLY snapshot export through "
+    "the sfmapi radiance-field contract.",
+    "display_name": "Brush",
+    "entry_points": ["gs3.providers.brush:plugin"],
+    "github_url": "https://github.com/SceneAPI/3DGS.git",
+    "licenses": [{"name": "Apache-2.0"}],
+    "package_name": "3dgs",
+    "plugin_id": "brush",
+    "providers": [
+        {
+            "backend_actions": ["brush.*"],
+            "capabilities": [
+                "radiance.train",
+                "radiance.evaluate",
+                "radiance.metrics.psnr",
+                "radiance.metrics.ssim",
+            ],
+            "display_name": "Brush",
+            "priority_hint": 72,
+            "provider_id": "brush",
+        }
+    ],
+    "runtime_modes": {
+        "container_service": {
+            "cache": {"path": "/sfmapi/cache", "policy": "read_write", "scope": "plugin"},
+            "execution": {
+                "artifact_collection": True,
+                "env": ["WGPU_BACKEND", "NVIDIA_VISIBLE_DEVICES", "NVIDIA_DRIVER_CAPABILITIES"],
+                "gpu": "required",
+                "log_collection": "both",
+                "mounts": {
+                    "input_path": "/sfmapi/input",
+                    "log_path": "/sfmapi/logs",
+                    "output_path": "/sfmapi/output",
+                    "work_path": "/sfmapi/work",
+                },
+                "path": "/execute",
+                "retry": {"backoff_seconds": 0, "max_attempts": 1},
+                "secrets": [],
+                "shutdown_timeout_seconds": 30,
+                "timeout_seconds": 86400,
+            },
+            "healthcheck": {"path": "/healthz", "timeout_seconds": 5},
+            "image": {
+                "build": {
+                    "args": {"SFMAPI_BRUSH_REF": "main"},
+                    "context": "https://github.com/SceneAPI/3DGS.git",
+                    "dockerfile": "docker/brush.Dockerfile",
+                    "ref": "main",
+                    "source": "git",
+                }
+            },
+            "object_store": {
+                "input_prefix": "brush/input/",
+                "output_prefix": "brush/output/",
+                "url_env": "SFMAPI_PLUGIN_OBJECT_STORE_URL",
+            },
+            "protocol": "sfmapi-plugin-http-v1",
+            "protocol_version": "1.1",
+            "provenance": {"image_digest_required": False, "source_revision": "main"},
+            "service": {
+                "default_url": "http://127.0.0.1:8096",
+                "url_env": "SFMAPI_BRUSH_SERVICE_URL",
+            },
+        },
+        "docker": {"build_context": "https://github.com/SceneAPI/3DGS.git", "image": None},
+        "external_tool": None,
+        "uv": {
+            "package": "3dgs",
+            "ref": "main",
+            "source": "git",
+            "url": "https://github.com/SceneAPI/3DGS.git",
+        },
+    },
+    "trust_tier": "community",
+    "upstream_projects": [
+        {"license": None, "name": "Brush", "url": "https://github.com/ArthurBrussee/brush"}
+    ],
+}
+
+
+# Brush integrates via container_service rather than registering an
+# in-process backend factory, so we use the canonical Plugin's
+# manifest-only mode (backend_name + backend_factory default to None
+# and register() no-ops). `Plugin` stays exported under the same name.
+from sceneapi.backends import Plugin  # noqa: E402
+
+plugin = Plugin(manifest=MANIFEST)
+
+__all__ = ["MANIFEST", "Plugin", "plugin"]

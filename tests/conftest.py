@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import pytest
 
-from sceneapi_3dgs import gsplat_trainer, trainer
-from sceneapi_3dgs.providers import PROVIDER_IDS
-from sceneapi_3dgs.server import build_app
+from gs3 import gsplat_trainer, trainer
+from gs3.providers import PROVIDER_IDS
+from gs3.server import build_app
 
 
 def engine_module(provider: str):

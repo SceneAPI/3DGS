@@ -4,7 +4,7 @@ counting case that repo alone carried)."""
 
 from __future__ import annotations
 
-from sceneapi_3dgs.trainer import _parse_fastergs_metrics
+from gs3.trainer import _parse_fastergs_metrics
 
 
 def test_parse_fastergs_metrics_file(tmp_path) -> None:

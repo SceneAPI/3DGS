@@ -5,8 +5,8 @@ from __future__ import annotations
 
 import subprocess
 
-from sceneapi_3dgs import trainer
-from sceneapi_3dgs.trainer import _parse_brush_metrics
+from gs3 import trainer
+from gs3.trainer import _parse_brush_metrics
 
 
 def test_vulkan_gpu_runtime_accepts_hardware_when_software_device_is_also_listed(

@@ -3,7 +3,7 @@ sfmapi_lfs/tests/test_protocol.py."""
 
 from __future__ import annotations
 
-from sceneapi_3dgs.trainer import _parse_lfs_metrics
+from gs3.trainer import _parse_lfs_metrics
 
 
 def test_parse_lfs_metrics_csv(tmp_path) -> None:

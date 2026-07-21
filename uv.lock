@@ -3,6 +3,60 @@ revision = 3
 requires-python = "==3.12.*"
 
 [[package]]
+name = "3dgs"
+version = "0.1.0"
+source = { editable = "." }
+dependencies = [
+    { name = "sceneapi" },
+    { name = "uvicorn", extra = ["standard"] },
+]
+
+[package.optional-dependencies]
+gsplat = [
+    { name = "numpy" },
+    { name = "pillow" },
+    { name = "pycolmap" },
+]
+gsplat-cuda = [
+    { name = "gsplat" },
+    { name = "lpips" },
+    { name = "numpy" },
+    { name = "pillow" },
+    { name = "pycolmap" },
+    { name = "torch" },
+]
+test = [
+    { name = "httpx" },
+    { name = "numpy" },
+    { name = "pillow" },
+    { name = "pycolmap" },
+    { name = "pytest" },
+    { name = "ruff" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "gsplat", marker = "extra == 'gsplat-cuda'", specifier = "==1.5.3" },
+    { name = "httpx", marker = "extra == 'test'", specifier = ">=0.28" },
+    { name = "lpips", marker = "extra == 'gsplat-cuda'", specifier = ">=0.1.4" },
+    { name = "numpy", marker = "extra == 'gsplat'", specifier = ">=1.26,<3" },
+    { name = "numpy", marker = "extra == 'gsplat-cuda'", specifier = ">=1.26,<3" },
+    { name = "numpy", marker = "extra == 'test'", specifier = ">=1.26,<3" },
+    { name = "pillow", marker = "extra == 'gsplat'", specifier = ">=10" },
+    { name = "pillow", marker = "extra == 'gsplat-cuda'", specifier = ">=10" },
+    { name = "pillow", marker = "extra == 'test'", specifier = ">=10" },
+    { name = "pycolmap", marker = "extra == 'gsplat'", specifier = ">=3.11" },
+    { name = "pycolmap", marker = "extra == 'gsplat-cuda'", specifier = ">=3.11" },
+    { name = "pycolmap", marker = "extra == 'test'", specifier = ">=3.11" },
+    { name = "pytest", marker = "extra == 'test'", specifier = ">=8.3" },
+    { name = "ruff", marker = "extra == 'test'", specifier = ">=0.11" },
+    { name = "sceneapi", editable = "../sfmapi" },
+    { name = "torch", marker = "extra == 'gsplat-cuda'", specifier = "==2.7.1" },
+    { name = "uvicorn", extras = ["standard"], specifier = ">=0.32" },
+]
+provides-extras = ["gsplat", "gsplat-cuda", "test"]
+
+[[package]]
 name = "aiosqlite"
 version = "0.22.1"
 source = { registry = "https://pypi.org/simple" }
@@ -955,6 +1009,7 @@ dependencies = [
     { name = "python-multipart" },
     { name = "python-ulid" },
     { name = "redis" },
+    { name = "sceneio" },
     { name = "sqlalchemy" },
     { name = "sse-starlette" },
     { name = "structlog" },
@@ -992,6 +1047,7 @@ requires-dist = [
     { name = "redis", specifier = ">=5.2" },
     { name = "respx", marker = "extra == 'dev'", specifier = ">=0.21" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.8" },
+    { name = "sceneio", editable = "../SceneIO" },
     { name = "sqlalchemy", specifier = ">=2.0.36" },
     { name = "sse-starlette", specifier = ">=2.1" },
     { name = "structlog", specifier = ">=24.4" },
@@ -1000,58 +1056,20 @@ requires-dist = [
 provides-extras = ["dev", "image-processing", "projection", "mcp"]
 
 [[package]]
-name = "sceneapi-3dgs"
-version = "0.1.0"
-source = { editable = "." }
+name = "sceneio"
+version = "0.2.0"
+source = { editable = "../SceneIO" }
 dependencies = [
-    { name = "sceneapi" },
-    { name = "uvicorn", extra = ["standard"] },
-]
-
-[package.optional-dependencies]
-gsplat = [
     { name = "numpy" },
-    { name = "pillow" },
-    { name = "pycolmap" },
-]
-gsplat-cuda = [
-    { name = "gsplat" },
-    { name = "lpips" },
-    { name = "numpy" },
-    { name = "pillow" },
-    { name = "pycolmap" },
-    { name = "torch" },
-]
-test = [
-    { name = "httpx" },
-    { name = "numpy" },
-    { name = "pillow" },
-    { name = "pycolmap" },
-    { name = "pytest" },
-    { name = "ruff" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "gsplat", marker = "extra == 'gsplat-cuda'", specifier = "==1.5.3" },
-    { name = "httpx", marker = "extra == 'test'", specifier = ">=0.28" },
-    { name = "lpips", marker = "extra == 'gsplat-cuda'", specifier = ">=0.1.4" },
-    { name = "numpy", marker = "extra == 'gsplat'", specifier = ">=1.26,<3" },
-    { name = "numpy", marker = "extra == 'gsplat-cuda'", specifier = ">=1.26,<3" },
-    { name = "numpy", marker = "extra == 'test'", specifier = ">=1.26,<3" },
-    { name = "pillow", marker = "extra == 'gsplat'", specifier = ">=10" },
-    { name = "pillow", marker = "extra == 'gsplat-cuda'", specifier = ">=10" },
-    { name = "pillow", marker = "extra == 'test'", specifier = ">=10" },
-    { name = "pycolmap", marker = "extra == 'gsplat'", specifier = ">=3.11" },
-    { name = "pycolmap", marker = "extra == 'gsplat-cuda'", specifier = ">=3.11" },
-    { name = "pycolmap", marker = "extra == 'test'", specifier = ">=3.11" },
-    { name = "pytest", marker = "extra == 'test'", specifier = ">=8.3" },
-    { name = "ruff", marker = "extra == 'test'", specifier = ">=0.11" },
-    { name = "sceneapi", editable = "../sfmapi" },
-    { name = "torch", marker = "extra == 'gsplat-cuda'", specifier = "==2.7.1" },
-    { name = "uvicorn", extras = ["standard"], specifier = ">=0.32" },
+    { name = "numpy", specifier = ">=1.26" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.3" },
+    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.8" },
 ]
-provides-extras = ["gsplat", "gsplat-cuda", "test"]
+provides-extras = ["dev"]
 
 [[package]]
 name = "scipy"

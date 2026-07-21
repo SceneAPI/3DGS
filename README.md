@@ -1,4 +1,4 @@
-# sceneapi-3dgs
+# 3dgs
 
 One `sfmapi-plugin-http-v1` container-service package for the five radiance-field
 training providers that previously shipped as five separate plugin repos. Each
@@ -9,11 +9,11 @@ its own module.
 
 | Provider id | Display name | Engine | Trainer module | Default service port |
 |---|---|---|---|---|
-| `brush` | Brush | native wgpu/Vulkan build (`/opt/brush`) | `sceneapi_3dgs.trainer` | 8096 |
-| `gsplat` | gsplat | in-process CUDA torch + gsplat | `sceneapi_3dgs.gsplat_trainer` | 8098 |
-| `fastergs` | Faster-GS | NeRFICG Faster-GS checkout (`/opt/fastergs`) | `sceneapi_3dgs.trainer` | 8093 |
-| `lfs` | LichtFeld Studio | native CUDA build (`/opt/LichtFeld-Studio`) | `sceneapi_3dgs.trainer` | 8095 |
-| `spirulae` | spirulae-splat | spirulae-splat checkout (`/opt/spirulae-splat`) | `sceneapi_3dgs.trainer` | 8094 |
+| `brush` | Brush | native wgpu/Vulkan build (`/opt/brush`) | `gs3.trainer` | 8096 |
+| `gsplat` | gsplat | in-process CUDA torch + gsplat | `gs3.gsplat_trainer` | 8098 |
+| `fastergs` | Faster-GS | NeRFICG Faster-GS checkout (`/opt/fastergs`) | `gs3.trainer` | 8093 |
+| `lfs` | LichtFeld Studio | native CUDA build (`/opt/LichtFeld-Studio`) | `gs3.trainer` | 8095 |
+| `spirulae` | spirulae-splat | spirulae-splat checkout (`/opt/spirulae-splat`) | `gs3.trainer` | 8094 |
 
 Every service exposes `/healthz`, `/version`, `/capabilities`, and `/execute`
 through the `sceneapi.plugin_service` kit at protocol `sfmapi-plugin-http-v1`
@@ -27,7 +27,7 @@ native builds driven over subprocess (torch for spirulae/fastergs arrives via
 the container image, as before):
 
 ```bash
-uv pip install sceneapi-3dgs
+uv pip install 3dgs
 ```
 
 Extras:
@@ -54,7 +54,7 @@ sfmapi-lfs --host 127.0.0.1 --port 8095
 sfmapi-spirulae --host 127.0.0.1 --port 8094
 ```
 
-Programmatically: `from sceneapi_3dgs.server import build_app;
+Programmatically: `from gs3.server import build_app;
 app = build_app("brush")` (replaces the old `sfmapi_brush.server:app`
 module attribute).
 
@@ -71,13 +71,13 @@ uv run pytest -q
 `[tool.uv.sources]`; CI checks out `SceneAPI/SceneAPI` into `.deps/sceneapi`
 and installs this package `--no-deps`.
 
-## Rename (0.1.0): sfmapi-radiance → sceneapi-3dgs
+## Rename (0.1.0): sfmapi-radiance → 3dgs
 
 This package was renamed from `sfmapi-radiance` (import package
 `sfmapi_radiance`) as part of the sfmapi → sceneapi migration; the repo moved
 to `SceneAPI/3DGS`. What changed and what deliberately did not:
 
-- **Distribution / import package**: `sceneapi-3dgs` / `sceneapi_3dgs`.
+- **Distribution / import package**: `3dgs` / `gs3`.
 - **Entry-point group**: manifests register under `sceneapi.backends` with
   UNCHANGED provider names (`brush`, `gsplat`, `fastergs`, `lfs`,
   `spirulae`); the core still reads the legacy `sfmapi.backends` group for
@@ -107,13 +107,13 @@ are to be archived by their owner.
 - **Entry points are unchanged**: the backend entry-point group still exposes
   `brush`, `gsplat`, `fastergs`, `lfs`, and `spirulae`, so a deployment swaps
   packages without config changes. Only the entry-point *values* move (e.g.
-  `sfmapi_brush.plugin:plugin` → `sceneapi_3dgs.providers.brush:plugin`).
+  `sfmapi_brush.plugin:plugin` → `gs3.providers.brush:plugin`).
 - **Console scripts are unchanged**: `sfmapi-brush`, `sfmapi-gsplat`,
   `sfmapi-fastergs`, `sfmapi-lfs`, `sfmapi-spirulae`.
 - **Manifest identity now names this repo.** Each manifest's identity
-  fields — `package_name` (`sceneapi-3dgs`), `github_url`
+  fields — `package_name` (`3dgs`), `github_url`
   (`SceneAPI/3DGS`), `entry_points`
-  (`sceneapi_3dgs.providers.<provider>:plugin`), the `uv` install
+  (`gs3.providers.<provider>:plugin`), the `uv` install
   coordinates, and the `docker` / `container_service.image.build` contexts —
   point at this repo. The five per-provider Dockerfiles were ported to
   `docker/<provider>.Dockerfile` (engine build steps unchanged; only the
@@ -127,8 +127,8 @@ are to be archived by their owner.
   `dockerfile` field there), so a bare `docker build` of the repo root finds
   no Dockerfile; use the container_service build (or
   `docker build -f docker/<provider>.Dockerfile`) instead.
-- **Direct importers**: `sfmapi_<pkg>.plugin` → `sceneapi_3dgs.providers.<provider>`;
-  `sfmapi_<pkg>.trainer` → `sceneapi_3dgs.trainer` (brush/lfs/spirulae/fastergs,
-  now parameterized by `request.provider`) or `sceneapi_3dgs.gsplat_trainer`;
-  `sfmapi_<pkg>.server:app` → `sceneapi_3dgs.server:build_app(<provider>)`.
-- `sfmapi-gsplat[cuda]` → `sceneapi-3dgs[gsplat-cuda]`.
+- **Direct importers**: `sfmapi_<pkg>.plugin` → `gs3.providers.<provider>`;
+  `sfmapi_<pkg>.trainer` → `gs3.trainer` (brush/lfs/spirulae/fastergs,
+  now parameterized by `request.provider`) or `gs3.gsplat_trainer`;
+  `sfmapi_<pkg>.server:app` → `gs3.server:build_app(<provider>)`.
+- `sfmapi-gsplat[cuda]` → `3dgs[gsplat-cuda]`.

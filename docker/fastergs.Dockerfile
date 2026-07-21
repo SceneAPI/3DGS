@@ -4,7 +4,7 @@
 # engine checkouts (nerficg-project/nerficg + faster-gaussian-splatting,
 # ref args SFMAPI_NERFICG_REF / SFMAPI_FASTERGS_REF) are unchanged —
 # only the plugin-package install and CMD moved to the merged
-# sceneapi-3dgs package.
+# 3dgs package.
 FROM pytorch/pytorch:2.7.1-cuda12.8-cudnn9-devel
 
 ARG SFMAPI_FASTERGS_REF=main
